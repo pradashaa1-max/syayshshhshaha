@@ -1,0 +1,11 @@
+{ Filter = { Bundles = ( 
+  "com.SKITLSE.StandRise",
+  "com.SKITLSE.StandRise.rework",
+  "com.SKITLSE.StandRiseRework",
+  "com.axlebolt.standoff2",
+  "com.axlebolt.standrise",
+  "com.axlebolt.standrise.rework",
+  "com.standrise.rework",
+  "com.standrise.game",
+  "com.standrise.client"
+); }; }
