@@ -11,20 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Theos
+      - name: Setup Theos + SDK
         run: |
           export THEOS=$HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
           
-          # clone theos
+          # Theos
           rm -rf $HOME/theos
-          git clone --depth=1 --recursive https://github.com/theos/theos.git $HOME/theos
+          git clone --depth=1 https://github.com/theos/theos.git $HOME/theos
           
-          # toolchain
+          # iOS SDK
+          git clone --depth=1 https://github.com/theos/sdks.git $THEOS/sdks
+          
+          # Toolchain
           cd /tmp
           curl -LO https://github.com/sbingner/llvm-project/releases/latest/download/linux-ios-arm64e-clang-toolchain.tar.lzma
           mkdir -p $THEOS/toolchain
           tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C $THEOS/toolchain
+          
+          # Check
+          ls $THEOS/sdks
+          ls $THEOS/toolchain
 
       - name: Build
         run: |
