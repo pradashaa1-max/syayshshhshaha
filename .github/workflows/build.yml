@@ -14,9 +14,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential fakeroot perl dpkg
+          sudo apt-get install -y build-essential fakeroot perl dpkg curl lzma
 
-      - name: Setup Theos + SDK
+      - name: Setup Theos + SDK + Toolchain
         run: |
           export THEOS=$HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
@@ -24,17 +24,29 @@ jobs:
           rm -rf $HOME/theos
           git clone --depth=1 https://github.com/theos/theos.git $HOME/theos
           
+          # SDK
           rm -rf $THEOS/sdks
           git clone --depth=1 https://github.com/theos/sdks.git $THEOS/sdks
           
+          # Toolchain
           cd /tmp
           curl -LO https://github.com/sbingner/llvm-project/releases/latest/download/linux-ios-arm64e-clang-toolchain.tar.lzma
           mkdir -p $THEOS/toolchain
           tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C $THEOS/toolchain
+          
+          # PATH
+          echo "$THEOS/bin" >> $GITHUB_PATH
+          echo "$THEOS/toolchain/linux-ios-arm64e-clang-toolchain/bin" >> $GITHUB_PATH
+          
+          # check
+          ls $THEOS/bin/dm.pl
+          ls $THEOS/sdks
+          which dm.pl || true
 
       - name: Build
         run: |
           export THEOS=$HOME/theos
+          export PATH=$THEOS/bin:$PATH
           make package FINALPACKAGE=1
 
       - name: Upload .deb
