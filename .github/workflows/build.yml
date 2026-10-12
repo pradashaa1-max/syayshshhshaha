@@ -14,12 +14,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential fakeroot perl dpkg curl xz-utils
+          sudo apt-get install -y build-essential fakeroot perl dpkg curl xz-utils git
 
       - name: Setup Theos
         run: |
-          # Theos
-          git clone --depth=1 https://github.com/theos/theos $HOME/theos
+          # полный клон с сабмодулями
+          git clone --recursive https://github.com/theos/theos $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
           
           # SDK
@@ -32,22 +32,17 @@ jobs:
           curl -L -o toolchain.tar.lzma https://github.com/sbingner/llvm-project/releases/latest/download/linux-ios-arm64e-clang-toolchain.tar.lzma
           tar --lzma -xf toolchain.tar.lzma -C $HOME/theos/toolchain
           
-          # Make dm.pl executable and available
-          chmod +x $HOME/theos/bin/*
-          ln -sf $HOME/theos/bin/dm.pl /usr/local/bin/dm.pl
-          
-          # Verify
-          which dm.pl
-          dm.pl -h || true
-          ls $HOME/theos/sdks
-          ls $HOME/theos/toolchain
+          # проверяем dm.pl
+          ls -la $HOME/theos/bin/dm.pl
+          file $HOME/theos/bin/dm.pl
+          $HOME/theos/bin/dm.pl -h || true
 
       - name: Build package
         run: |
           export THEOS=$HOME/theos
           export PATH=$THEOS/bin:$PATH
           make package FINALPACKAGE=1
-          ls -la packages/
+          ls -la packages/ || true
 
       - name: Upload .deb
         uses: actions/upload-artifact@v4
