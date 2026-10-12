@@ -1,0 +1,9 @@
+Package: com.astral.cheat
+Name: Astral Cheat
+Depends: mobilesubstrate
+Version: 1.2.0
+Architecture: iphoneos-arm
+Description: AstralCheat for StandRise Rework
+Maintainer: Astral
+Author: Astral
+Section: Tweaks
